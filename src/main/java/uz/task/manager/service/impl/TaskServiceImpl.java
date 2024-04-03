@@ -98,6 +98,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public ApiResponse updateTaskStatus(Long id, TaskStatusRequest request) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task is not found"));
         task.setStatus(request.getStatus());
