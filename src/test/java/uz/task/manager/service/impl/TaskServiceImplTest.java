@@ -17,6 +17,7 @@ import uz.task.manager.entity.enums.TaskPriority;
 import uz.task.manager.entity.enums.TaskStatus;
 import uz.task.manager.payload.ApiResponse;
 import uz.task.manager.payload.TaskRequest;
+import uz.task.manager.payload.TaskStatusRequest;
 import uz.task.manager.repository.TaskRepository;
 
 import java.time.LocalDate;
@@ -172,5 +173,22 @@ class TaskServiceImplTest {
         ApiResponse response = taskService.deleteTask(1L);
 
         assertEquals("Task is deleted successfully", response.getMessage());
+    }
+
+    @Test
+    void updateTaskStatus() {
+        task.setId(1L);
+        TaskStatus newStatus=TaskStatus.IN_PROGRESS;
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+        task.setStatus(newStatus);
+        when(taskRepository.save(task)).thenReturn(task);
+
+        ApiResponse response = taskService.updateTaskStatus(1L, new TaskStatusRequest(newStatus));
+
+        then(taskRepository).should().save(taskArgumentCaptor.capture());
+        Task taskArgumentCaptorValue = taskArgumentCaptor.getValue();
+        assertThat(taskArgumentCaptorValue.getStatus()).isEqualTo(newStatus);
+
+        assertEquals("Task status is updated successfully", response.getMessage());
     }
 }

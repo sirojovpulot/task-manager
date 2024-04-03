@@ -14,6 +14,7 @@ import uz.task.manager.entity.enums.TaskPriority;
 import uz.task.manager.entity.enums.TaskStatus;
 import uz.task.manager.payload.ApiResponse;
 import uz.task.manager.payload.TaskRequest;
+import uz.task.manager.payload.TaskStatusRequest;
 import uz.task.manager.repository.TaskRepository;
 import uz.task.manager.repository.TaskSpecification;
 import uz.task.manager.service.TaskService;
@@ -45,7 +46,7 @@ public class TaskServiceImpl implements TaskService {
                 .and(category.isEmpty() ? null : TaskSpecification.categoryContains(category))
                 .and(startDate == null && endDate == null ? null : TaskSpecification.dueDateBetween(startDate, endDate));
 
-        Page<Task> tasks = taskRepository.findAll(where, PageRequest.of(page, size, Sort.Direction.ASC,"createdAt"));
+        Page<Task> tasks = taskRepository.findAll(where, PageRequest.of(page, size, Sort.Direction.ASC, "createdAt"));
 
         return ApiResponse.builder()
                 .data(tasks)
@@ -93,6 +94,16 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.delete(task);
         return ApiResponse.builder()
                 .message("Task is deleted successfully")
+                .build();
+    }
+
+    @Override
+    public ApiResponse updateTaskStatus(Long id, TaskStatusRequest request) {
+        Task task = taskRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task is not found"));
+        task.setStatus(request.getStatus());
+        taskRepository.save(task);
+        return ApiResponse.builder()
+                .message("Task status is updated successfully")
                 .build();
     }
 }

@@ -4,6 +4,7 @@ import uz.task.manager.entity.enums.TaskPriority;
 import uz.task.manager.entity.enums.TaskStatus;
 import uz.task.manager.payload.ApiResponse;
 import uz.task.manager.payload.TaskRequest;
+import uz.task.manager.payload.TaskStatusRequest;
 
 import java.time.LocalDate;
 
@@ -23,4 +24,6 @@ public interface TaskService {
     ApiResponse updateTask(Long id, TaskRequest request);
 
     ApiResponse deleteTask(Long id);
+
+    ApiResponse updateTaskStatus(Long id, TaskStatusRequest request);
 }

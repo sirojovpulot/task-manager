@@ -8,6 +8,7 @@ import uz.task.manager.entity.enums.TaskPriority;
 import uz.task.manager.entity.enums.TaskStatus;
 import uz.task.manager.payload.ApiResponse;
 import uz.task.manager.payload.TaskRequest;
+import uz.task.manager.payload.TaskStatusRequest;
 import uz.task.manager.service.TaskService;
 
 import java.time.LocalDate;
@@ -50,6 +51,11 @@ public class TaskController {
     @PutMapping("{id}")
     public ResponseEntity<ApiResponse> updateTask(@PathVariable Long id, @RequestBody @Valid TaskRequest request) {
         return ResponseEntity.ok(taskService.updateTask(id, request));
+    }
+
+    @PutMapping("{id}/status")
+    public ResponseEntity<ApiResponse> updateTask(@PathVariable Long id, @RequestBody @Valid TaskStatusRequest request) {
+        return ResponseEntity.ok(taskService.updateTaskStatus(id, request));
     }
 
     @DeleteMapping("{id}")

@@ -3,8 +3,7 @@ package uz.task.manager.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,10 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.task.manager.entity.enums.TaskPriority;
 import uz.task.manager.entity.enums.TaskStatus;
-import uz.task.manager.payload.ApiResponse;
-import uz.task.manager.payload.SignInRequest;
-import uz.task.manager.payload.SignUpRequest;
-import uz.task.manager.payload.TaskRequest;
+import uz.task.manager.payload.*;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -33,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TaskIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
@@ -60,6 +57,7 @@ public class TaskIntegrationTest {
     }
 
     @Test
+    @Order(1)
     void itShouldCreateTask() throws Exception {
         //create task
         TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
@@ -96,6 +94,7 @@ public class TaskIntegrationTest {
     }
 
     @Test
+    @Order(2)
     void itShouldReturnBadRequestStatusCode() throws Exception {
         TaskRequest request = new TaskRequest(null, "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions signInResultActions = mockMvc.perform(post("/api/v1/task")
@@ -107,6 +106,7 @@ public class TaskIntegrationTest {
     }
 
     @Test
+    @Order(3)
     void itShouldReturnForbiddenStatusCode() throws Exception {
         TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions signInResultActions = mockMvc.perform(post("/api/v1/task")
@@ -117,6 +117,7 @@ public class TaskIntegrationTest {
     }
 
     @Test
+    @Order(4)
     void itShouldUpdateTask() throws Exception {
         //create task
         TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
@@ -156,6 +157,7 @@ public class TaskIntegrationTest {
     }
 
     @Test
+    @Order(5)
     void itShouldReturnForbiddenStatusCodeWhenUpdateTask() throws Exception {
         TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions resultActions = mockMvc.perform(put("/api/v1/task/1")
@@ -166,6 +168,7 @@ public class TaskIntegrationTest {
     }
 
     @Test
+    @Order(6)
     void itShouldReturnBadRequestStatusCodeWhenUpdateTask() throws Exception {
         TaskRequest request = new TaskRequest(null, "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions resultActions = mockMvc.perform(put("/api/v1/task/1")
@@ -177,8 +180,9 @@ public class TaskIntegrationTest {
     }
 
     @Test
+    @Order(7)
     void itShouldReturnBadRequestStatusCodeWhenDeleteTask() throws Exception {
-        ResultActions resultActions = mockMvc.perform(delete("/api/v1/task/1")
+        ResultActions resultActions = mockMvc.perform(delete("/api/v1/task/10")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -188,6 +192,42 @@ public class TaskIntegrationTest {
     }
 
     @Test
+    @Order(8)
+    void itShouldUpdateTaskStatus() throws Exception {
+        //create task
+        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
+        ResultActions createTaskResultActions = mockMvc.perform(post("/api/v1/task")
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Objects.requireNonNull(objectToJson(request))));
+
+        createTaskResultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Task is created successfully"));
+
+        //update task
+        TaskStatusRequest updateReq = new TaskStatusRequest(TaskStatus.IN_PROGRESS);
+        ResultActions updateTaskResultActions = mockMvc.perform(put("/api/v1/task/1/status")
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Objects.requireNonNull(objectToJson(updateReq))));
+
+        updateTaskResultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Task status is updated successfully"));
+
+        //list of tasks
+        ResultActions getResultActions = mockMvc.perform(get("/api/v1/task")
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        getResultActions
+                .andExpect(jsonPath("$.data.content[0].status").value("IN_PROGRESS"));
+
+    }
+
+    @Test
+    @Order(9)
     void itShouldDeleteTask() throws Exception {
         //create task
         TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
