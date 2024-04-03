@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: task-manager
+  datasource:
+    url: jdbc:postgresql://localhost:5432/task_manager
+    driverClassName: org.postgresql.Driver
+    username: myuser
+    password: mypassword
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    databasePlatform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+jwt:
+  secret-key: 333aae7133c19eda8f7f61ce07e642295df61b1ed47c9270a488
+  expiration: 86400000 #24 hours
+  refresh-expiration: 604800000 # week
+
