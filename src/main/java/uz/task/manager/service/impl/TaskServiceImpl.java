@@ -3,6 +3,7 @@ package uz.task.manager.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class TaskServiceImpl implements TaskService {
                 .and(category.isEmpty() ? null : TaskSpecification.categoryContains(category))
                 .and(startDate == null && endDate == null ? null : TaskSpecification.dueDateBetween(startDate, endDate));
 
-        Page<Task> tasks = taskRepository.findAll(where, PageRequest.of(page, size));
+        Page<Task> tasks = taskRepository.findAll(where, PageRequest.of(page, size, Sort.Direction.ASC,"createdAt"));
 
         return ApiResponse.builder()
                 .data(tasks)
@@ -78,6 +79,7 @@ public class TaskServiceImpl implements TaskService {
         task.setDueDate(request.getDueDate());
         task.setCategory(request.getCategory().trim());
         task.setUpdatedAt(LocalDateTime.now());
+        task.setStatus(request.getStatus());
         taskRepository.save(task);
         return ApiResponse.builder()
                 .message("Task is updated successfully")

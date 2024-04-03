@@ -138,7 +138,7 @@ class TaskServiceImplTest {
     void createTask() {
         when(taskRepository.save(task)).thenReturn(task);
 
-        ApiResponse response = taskService.createTask(new TaskRequest(title, content, priority, dueDate, category));
+        ApiResponse response = taskService.createTask(new TaskRequest(title, content, priority, null, dueDate, category));
 
         then(taskRepository).should().save(taskArgumentCaptor.capture());
         Task taskArgumentCaptorValue = taskArgumentCaptor.getValue();
@@ -155,7 +155,7 @@ class TaskServiceImplTest {
         task.setContent(newContent);
         when(taskRepository.save(task)).thenReturn(task);
 
-        ApiResponse response = taskService.updateTask(1L, new TaskRequest(title, newContent, priority, dueDate, category));
+        ApiResponse response = taskService.updateTask(1L, new TaskRequest(title, newContent, priority, status, dueDate, category));
 
         then(taskRepository).should().save(taskArgumentCaptor.capture());
         Task taskArgumentCaptorValue = taskArgumentCaptor.getValue();

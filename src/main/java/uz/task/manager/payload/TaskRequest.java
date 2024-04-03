@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uz.task.manager.entity.enums.TaskPriority;
+import uz.task.manager.entity.enums.TaskStatus;
 
 import java.time.LocalDate;
 
@@ -22,6 +23,8 @@ public class TaskRequest {
 
     @NotNull
     private TaskPriority priority;
+
+    private TaskStatus status;
 
     @NotNull
     private LocalDate dueDate;

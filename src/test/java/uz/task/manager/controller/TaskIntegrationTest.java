@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uz.task.manager.entity.enums.TaskPriority;
+import uz.task.manager.entity.enums.TaskStatus;
 import uz.task.manager.payload.ApiResponse;
 import uz.task.manager.payload.SignInRequest;
 import uz.task.manager.payload.SignUpRequest;
@@ -61,7 +62,7 @@ public class TaskIntegrationTest {
     @Test
     void itShouldCreateTask() throws Exception {
         //create task
-        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, LocalDate.of(2024, Month.APRIL, 20), "category");
+        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions createTaskResultAction = mockMvc.perform(post("/api/v1/task")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +97,7 @@ public class TaskIntegrationTest {
 
     @Test
     void itShouldReturnBadRequestStatusCode() throws Exception {
-        TaskRequest request = new TaskRequest(null, "content", TaskPriority.HIGH, LocalDate.of(2024, Month.APRIL, 20), "category");
+        TaskRequest request = new TaskRequest(null, "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions signInResultActions = mockMvc.perform(post("/api/v1/task")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +108,7 @@ public class TaskIntegrationTest {
 
     @Test
     void itShouldReturnForbiddenStatusCode() throws Exception {
-        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, LocalDate.of(2024, Month.APRIL, 20), "category");
+        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions signInResultActions = mockMvc.perform(post("/api/v1/task")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Objects.requireNonNull(objectToJson(request))));
@@ -118,7 +119,7 @@ public class TaskIntegrationTest {
     @Test
     void itShouldUpdateTask() throws Exception {
         //create task
-        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, LocalDate.of(2024, Month.APRIL, 20), "category");
+        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions createTaskResultActions = mockMvc.perform(post("/api/v1/task")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -129,7 +130,7 @@ public class TaskIntegrationTest {
                 .andExpect(jsonPath("$.message").value("Task is created successfully"));
 
         //update task
-        TaskRequest updateReq = new TaskRequest("title2", "content2", TaskPriority.HIGH, LocalDate.of(2024, Month.APRIL, 20), "category");
+        TaskRequest updateReq = new TaskRequest("title2", "content2", TaskPriority.HIGH, TaskStatus.OPEN, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions updateTaskResultActions = mockMvc.perform(put("/api/v1/task/1")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -156,7 +157,7 @@ public class TaskIntegrationTest {
 
     @Test
     void itShouldReturnForbiddenStatusCodeWhenUpdateTask() throws Exception {
-        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, LocalDate.of(2024, Month.APRIL, 20), "category");
+        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions resultActions = mockMvc.perform(put("/api/v1/task/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Objects.requireNonNull(objectToJson(request))));
@@ -166,7 +167,7 @@ public class TaskIntegrationTest {
 
     @Test
     void itShouldReturnBadRequestStatusCodeWhenUpdateTask() throws Exception {
-        TaskRequest request = new TaskRequest(null, "content", TaskPriority.HIGH, LocalDate.of(2024, Month.APRIL, 20), "category");
+        TaskRequest request = new TaskRequest(null, "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions resultActions = mockMvc.perform(put("/api/v1/task/1")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -189,7 +190,7 @@ public class TaskIntegrationTest {
     @Test
     void itShouldDeleteTask() throws Exception {
         //create task
-        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, LocalDate.of(2024, Month.APRIL, 20), "category");
+        TaskRequest request = new TaskRequest("title", "content", TaskPriority.HIGH, null, LocalDate.of(2024, Month.APRIL, 20), "category");
         ResultActions createTaskResultAction = mockMvc.perform(post("/api/v1/task")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
